@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyHeight="7.5%p"
+    android:keyWidth="30%p">
+
+    <Row android:verticalGap="2%p">
+
+        <!--codes指定这个按键的输出值-->
+        <!--keyLabel指定这个按键的显示值-->
+        <!--keyIcon指定这个按键显示的图标，如果指定该值，显示的时候显示图标，不显示文本-->
+        <!--keyWidth按键的宽度，可以为精确值或则相对值，对于精确值支持多种单位，例如：像素，英寸 等；相对值为相对于基础取值的百分比，为以% 或则%p 结尾，其中%p表示相对于父容器-->
+        <!--keyHeight按键的高度，取值同keyWidth-->
+        <!--horizontalGap按键左边的间隙，水平方向-->
+        <!--keyEdgeFlags按键的对齐指令，取值为left或则right-->
+
+        <Key
+            android:codes="49"
+            android:horizontalGap="2%p"
+            android:keyEdgeFlags="left"
+            android:keyLabel="1" />
+        <Key
+            android:codes="50"
+            android:horizontalGap="3%p"
+            android:keyLabel="2" />
+        <Key
+            android:codes="51"
+            android:horizontalGap="3%p"
+            android:keyEdgeFlags="right"
+            android:keyLabel="3" />
+    </Row>
+
+    <Row android:verticalGap="2%p">
+        <Key
+            android:codes="52"
+            android:horizontalGap="2%p"
+            android:keyLabel="4" />
+        <Key
+            android:codes="53"
+            android:horizontalGap="3%p"
+            android:keyLabel="5" />
+        <Key
+            android:codes="54"
+            android:horizontalGap="3%p"
+            android:keyEdgeFlags="right"
+            android:keyLabel="6" />
+    </Row>
+
+    <Row android:verticalGap="2%p">
+        <Key
+            android:codes="55"
+            android:horizontalGap="2%p"
+            android:keyLabel="7" />
+        <Key
+            android:codes="56"
+            android:horizontalGap="3%p"
+            android:keyLabel="8" />
+        <Key
+            android:codes="57"
+            android:horizontalGap="3%p"
+            android:keyEdgeFlags="right"
+            android:keyLabel="9" />
+    </Row>
+
+    <Row>
+        <!--isModifier 是否为功能键，取值true或false-->
+        <!--isRepeatable按键是否是可重复的，如果长按该键可以触发重复按键事件则为true，否则为false-->
+        <Key
+            android:codes="-2"
+            android:horizontalGap="2%p"
+            android:isModifier="true"
+            android:isRepeatable="false"
+            android:isSticky="true"
+            android:keyEdgeFlags="left"
+            android:keyLabel="abc" />
+        <Key
+            android:codes="48"
+            android:horizontalGap="3%p"
+            android:keyLabel="0" />
+
+        <!--isRepeatable按键是否是可重复的，如果长按该键可以触发重复按键事件则为true，否则为false-->
+        <Key
+            android:codes="-5"
+            android:horizontalGap="3%p"
+            android:isRepeatable="true"
+            android:keyLabel="Delete"
+            android:keyEdgeFlags="right" />
+    </Row>
+
+</Keyboard> 
