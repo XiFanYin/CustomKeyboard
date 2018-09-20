@@ -20,7 +20,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     //键盘的根布局
     private final FrameLayout frameLayout;
     //英文键盘和数字键盘标记
-    public static Integer NUMBERXML = R.xml.keyboard_number;
+    public static Integer NUMBERXML = R.xml.keyboard_number_abc;
     public static Integer ENGLISHXML = R.xml.keyboard_english;
     //初始化键盘
     private static Integer current_xml = NUMBERXML;
