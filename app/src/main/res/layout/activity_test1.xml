@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
 
-    <android.inputmethodservice.KeyboardView
+    <com.advertising.administrator.customkeyboard.Test1.CustomKeyboardView
         android:id="@+id/keyboardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
