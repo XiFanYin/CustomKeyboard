@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:background="#e6e6e6">
 
+
     <android.inputmethodservice.KeyboardView
         android:id="@+id/keyboardView"
         android:layout_width="match_parent"
