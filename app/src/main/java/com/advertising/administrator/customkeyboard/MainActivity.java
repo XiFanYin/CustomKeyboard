@@ -23,9 +23,12 @@ public class MainActivity extends AppCompatActivity{
         KeyboardViewManager
                 .builder()
                 .setKeyModel(KeyboardViewManager.NUMBERXML)
-                .hideSystemSoftKeyboard(edit1)
+                .hideSystemSoftKeyboard(edit1,edit2)
                 .build(this)
                 .addKeyboardView(rootView);
+
+
+
     }
 
 

@@ -5,6 +5,7 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,7 +25,8 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     public static Integer ENGLISHXML = R.xml.keyboard_english;
     //初始化键盘
     private static Integer current_xml = NUMBERXML;
-    private final EditText editText;
+    private final EditText[] editText;
+    private EditText currentEditText;
     private final Context context;
     private final Keyboard keyboardEnglish;
     private final Keyboard keyboardNumber;
@@ -34,7 +36,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     //标识数字键盘和英文键盘的切换
     private boolean isShift;
 
-    private KeyboardViewManager(Context context, final EditText editText) {
+    private KeyboardViewManager(Context context, final EditText[] editText) {
         this.context = context;
         this.editText = editText;
         //创建打气筒
@@ -55,17 +57,21 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
         //给键盘设置监听
         keyboardView.setOnKeyboardActionListener(this);
+
         //设置点击EditText点击弹出键盘
-        editText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                //让键盘显示
-                frameLayout.setVisibility(View.VISIBLE);
-                //设置光标显示
-                editText.setCursorVisible(true);
-                return false;
-            }
-        });
+        for (int i = 0; i < editText.length; i++) {
+            editText[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (b) {
+                        currentEditText = (EditText) view;
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            });
+        }
+
     }
 
 
@@ -85,9 +91,6 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     }
 
 
-
-
-
     //================================键盘监听事件回调==============================================
 
     @Override
@@ -103,9 +106,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     @Override
     public void onKey(int primaryCode, int[] ints) {
         //获取文本内容
-        Editable editable = editText.getText();
+        Editable editable = currentEditText.getText();
         //  获取光标位置
-        int start = editText.getSelectionStart();
+        int start = currentEditText.getSelectionStart();
         switch (primaryCode) {
 
             case -1://切换大小写按钮
@@ -118,7 +121,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
             case -4://完成按钮
                 //光标不显示
-                editText.setCursorVisible(false);
+                currentEditText.setCursorVisible(false);
                 frameLayout.setVisibility(View.GONE);
                 break;
 
@@ -173,7 +176,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     public static final class Builder {
 
-        private EditText editText;
+        private EditText[] editText;
 
         private Builder() {
         }
@@ -185,10 +188,14 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
 
         //如果页面有Eidttist，解决键盘冲突
-        public Builder hideSystemSoftKeyboard(EditText editText) {
+        public Builder hideSystemSoftKeyboard(EditText... editText) {
             //隐藏系统软键盘冲突，需要配合清单文件一起使用: android:windowSoftInputMode="stateHidden|stateUnchanged"
-            SystemSoftKeyUtils.hideSystemSoftKeyboard(editText);
-            this.editText = editText;
+            EditText[] editText1 = editText;
+            for (int i = 0; i < editText1.length; i++) {
+                SystemSoftKeyUtils.hideSystemSoftKeyboard(editText1[i]);
+                this.editText = editText1;
+            }
+
             return this;
         }
 
