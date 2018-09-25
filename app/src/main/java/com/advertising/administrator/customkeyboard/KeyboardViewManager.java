@@ -55,7 +55,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
         //给键盘设置监听
         keyboardView.setOnKeyboardActionListener(this);
-
+        //设置点击EditText点击弹出键盘
         editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {

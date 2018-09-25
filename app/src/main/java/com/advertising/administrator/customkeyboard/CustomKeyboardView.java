@@ -1,4 +1,4 @@
-package com.advertising.administrator.customkeyboard.Test1;
+package com.advertising.administrator.customkeyboard;
 
 import android.content.Context;
 import android.graphics.Canvas;
