@@ -46,14 +46,14 @@ public class CustomKeyboardView extends KeyboardView {
 
         for (Keyboard.Key key : keys) {
             if (key.codes[0] == -4) {
-                //绘制一个按钮覆盖掉上边绘制的按钮
-                StateListDrawable stateListDrawable = new StateListDrawable();
-                stateListDrawable.addState(key.getCurrentDrawableState(), getContext().getResources().getDrawable(R.drawable.srue_pressed_false));
-                stateListDrawable.addState(key.getCurrentDrawableState(), getContext().getResources().getDrawable(R.drawable.srue_peessed_true));
-                //没有任何状态时显示的图片，就设置空集合，默认状态
-                stateListDrawable.addState(new int[]{}, getContext().getResources().getDrawable(R.drawable.srue_peessed_true));
-                stateListDrawable.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
-                stateListDrawable.draw(canvas);
+                //获取drawable资源
+                Drawable drawable = getContext().getResources().getDrawable(R.drawable.srue_bg_key);
+                //把真正的状态设置给上层绘制的key键
+                drawable.setState(key.getCurrentDrawableState());
+                //rawable将在被绘制在canvas的哪个矩形区域内（这个矩形区域的坐标是以canvas左上角为坐标原点的）
+                drawable.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
+                //开始绘制
+                drawable.draw(canvas);
                 //绘制文字
                 if (key.label != null) {
                     Paint.FontMetrics fontMetrics = mtextPaint.getFontMetrics();
