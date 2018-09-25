@@ -32,7 +32,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private boolean isCapital = false;
     private final KeyboardView keyboardView;
     //标识数字键盘和英文键盘的切换
-    private boolean isShift = true;
+    private boolean isShift;
 
     private KeyboardViewManager(Context context, final EditText editText) {
         this.context = context;
@@ -59,7 +59,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                //让键盘显示
                 frameLayout.setVisibility(View.VISIBLE);
+                //设置光标显示
                 editText.setCursorVisible(true);
                 return false;
             }
@@ -83,6 +85,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     }
 
 
+
+
+
     //================================键盘监听事件回调==============================================
 
     @Override
@@ -97,7 +102,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     @Override
     public void onKey(int primaryCode, int[] ints) {
+        //获取文本内容
         Editable editable = editText.getText();
+        //  获取光标位置
         int start = editText.getSelectionStart();
         switch (primaryCode) {
 
@@ -110,12 +117,13 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 break;
 
             case -4://完成按钮
+                //光标不显示
                 editText.setCursorVisible(false);
                 frameLayout.setVisibility(View.GONE);
                 break;
 
 
-            case -5://删除按钮
+            case -5://删除光标前字符
                 if (!TextUtils.isEmpty(editable)) {
                     if (start > 0) {
                         editable.delete(start - 1, start);
@@ -123,6 +131,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 }
                 break;
             default://普通的按键就直接去把字符串设置到EditText上即可
+                //在光标处插入字符
                 editable.insert(start, Character.toString((char) primaryCode));
                 break;
         }
@@ -196,6 +205,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
      * 英文键盘大小写切换
      */
     private void shiftEnglish() {
+        //获取所有的key
         List<Keyboard.Key> keyList = keyboardEnglish.getKeys();
         for (Keyboard.Key key : keyList) {
             if (key.label != null && isKey(key.label.toString())) {
