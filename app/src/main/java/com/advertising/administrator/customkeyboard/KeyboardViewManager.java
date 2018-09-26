@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -27,6 +29,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private static Integer current_xml = NUMBERXML;
     private final EditText[] editText;
     private EditText currentEditText;
+    private EditText focusReplace;
     private final Context context;
     private final Keyboard keyboardEnglish;
     private final Keyboard keyboardNumber;
@@ -65,13 +68,61 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 public void onFocusChange(View view, boolean b) {
                     if (b) {
                         currentEditText = (EditText) view;
-                        frameLayout.setVisibility(View.VISIBLE);
-                    }
+                        if (frameLayout.getVisibility() == View.GONE) {
+                            showSoftKeyboard();
+                        }
 
+                    }
+                    Log.e("rrrrrrrrrrr", "=======" + b);
                 }
             });
         }
 
+    }
+
+    //显示键盘
+    public void showSoftKeyboard() {
+        //设置加载动画.
+        Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
+        frameLayout.startAnimation(show);
+        show.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                frameLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    public void hideSoftKeyboard() {
+        //设置隐藏动画
+        Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
+        frameLayout.startAnimation(hide);
+        hide.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                frameLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
 
@@ -122,7 +173,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             case -4://完成按钮
                 //光标不显示
                 currentEditText.setCursorVisible(false);
-                frameLayout.setVisibility(View.GONE);
+                hideSoftKeyboard();
                 break;
 
 
