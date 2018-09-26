@@ -38,10 +38,12 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private final KeyboardView keyboardView;
     //标识数字键盘和英文键盘的切换
     private boolean isShift;
+    private boolean closeKeyboard;
 
-    private KeyboardViewManager(Context context, final EditText[] editText) {
+    private KeyboardViewManager(Context context, final EditText[] editText, boolean closeKeyboard) {
         this.context = context;
         this.editText = editText;
+        this.closeKeyboard = closeKeyboard;
         //创建打气筒
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         //把键盘布局解析成对象
@@ -71,9 +73,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                         if (frameLayout.getVisibility() == View.GONE) {
                             showSoftKeyboard();
                         }
-
                     }
-                    Log.e("rrrrrrrrrrr", "=======" + b);
                 }
             });
         }
@@ -81,48 +81,58 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     }
 
     //显示键盘
-    public void showSoftKeyboard() {
-        //设置加载动画.
-        Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
-        frameLayout.startAnimation(show);
-        show.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+    private void showSoftKeyboard() {
+        if (closeKeyboard){
+            frameLayout.setVisibility(View.VISIBLE);
+        }else {
+            Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
+            frameLayout.startAnimation(show);
+            show.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
-            }
+                }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                frameLayout.setVisibility(View.VISIBLE);
-            }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    frameLayout.setVisibility(View.VISIBLE);
+                }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
-            }
-        });
+                }
+            });
+        }
+
+
     }
 
-    public void hideSoftKeyboard() {
-        //设置隐藏动画
-        Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
-        frameLayout.startAnimation(hide);
-        hide.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+    private void hideSoftKeyboard() {
+        if (closeKeyboard){
+            frameLayout.setVisibility(View.GONE);
+        }else {
+            //设置隐藏动画
+            Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
+            frameLayout.startAnimation(hide);
+            hide.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
-            }
+                }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    frameLayout.setVisibility(View.GONE);
+                }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                frameLayout.setVisibility(View.GONE);
-            }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
+                }
+            });
 
-            }
-        });
+        }
+
     }
 
 
@@ -232,17 +242,19 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     public static final class Builder {
 
         private EditText[] editText;
+        private boolean closeKeyboard;
+
 
         private Builder() {
         }
 
-        //设置键盘模式
+        //设置第一个输入框键盘模式,不设置默认是英文键盘
         public Builder setKeyModel(Integer keyModel) {
             current_xml = keyModel;
             return this;
         }
 
-        //如果页面有Eidttist，解决键盘冲突
+        //如果页面有Eidttist，解决键盘冲突，这个方法必须写
         public Builder hideSystemSoftKeyboard(EditText... editText) {
             //隐藏系统软键盘冲突，需要配合清单文件一起使用: android:windowSoftInputMode="stateHidden|stateUnchanged"
             EditText[] editText1 = editText;
@@ -255,8 +267,14 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
 
 
+        public Builder closeKeyboardAnimation(boolean closeKeyboard) {
+            this.closeKeyboard = closeKeyboard;
+            return this;
+        }
+
+
         public KeyboardViewManager build(Context context) {
-            return new KeyboardViewManager(context, editText);
+            return new KeyboardViewManager(context, editText, closeKeyboard);
         }
 
     }
