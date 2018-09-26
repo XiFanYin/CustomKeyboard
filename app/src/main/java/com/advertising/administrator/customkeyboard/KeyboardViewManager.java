@@ -29,8 +29,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     //英文键盘和数字键盘标记
     public static Integer NUMBERXML = R.xml.keyboard_number_abc;
     public static Integer ENGLISHXML = R.xml.keyboard_english;
-    //初始化键盘
-    private static Integer current_xml;
+
     private Map<EditText, onSureClickListener> editList;
     private EditText currentEditText;
     private EditText focusReplace;
@@ -57,13 +56,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         keyboardNumber = new Keyboard(context, NUMBERXML);
         keyboardEnglish = new Keyboard(context, ENGLISHXML);
         //把创建的键盘布局设置给控件
-        if (NUMBERXML.equals(current_xml)) {
-            keyboardView.setKeyboard(keyboardNumber);
-            isShift = true;
-        } else {
-            keyboardView.setKeyboard(keyboardEnglish);
-            isShift = false;
-        }
+        keyboardView.setKeyboard(keyboardNumber);
         //给键盘设置监听
         keyboardView.setOnKeyboardActionListener(this);
         for (EditText key : editText.keySet()) {
@@ -72,11 +65,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 public void onFocusChange(View view, boolean b) {
                     if (b) {
                         currentEditText = (EditText) view;
-                        if (frameLayout.getVisibility() == View.GONE) {
-                            showSoftKeyboard();
-                        }
-
-
+                        showSoftKeyboard();
                     }
                 }
             });
@@ -85,6 +74,13 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     //显示键盘
     private void showSoftKeyboard() {
+        int inputType = currentEditText.getInputType();
+        if (inputType == 2) {
+            keyboardView.setKeyboard(keyboardNumber);
+        } else {
+            keyboardView.setKeyboard(keyboardEnglish);
+        }
+
         if (closeKeyboard) {
             frameLayout.setVisibility(View.VISIBLE);
         } else {
@@ -192,7 +188,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 currentEditText.setCursorVisible(false);
                 hideSoftKeyboard();
                 focusReplace.requestFocus();
-                if (editList.get(currentEditText)!=null){
+                if (editList.get(currentEditText) != null) {
                     editList.get(currentEditText).onSureClick();
                 }
                 break;
@@ -256,11 +252,6 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             editList = new HashMap<>();
         }
 
-        //设置第一个输入框键盘模式,不设置默认是英文键盘
-        public Builder setKeyModel(Integer keyModel) {
-            current_xml = keyModel;
-            return this;
-        }
 
         //如果页面有Eidttist，解决键盘冲突，这个方法必须写
         public Builder bindEditText(EditText... editText) {
