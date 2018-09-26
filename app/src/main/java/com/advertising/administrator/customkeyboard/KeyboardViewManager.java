@@ -16,7 +16,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListener {
@@ -27,7 +31,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     public static Integer ENGLISHXML = R.xml.keyboard_english;
     //初始化键盘
     private static Integer current_xml;
-    private final EditText[] editText;
+    private Map<EditText, onSureClickListener> editList;
     private EditText currentEditText;
     private EditText focusReplace;
     private final Context context;
@@ -40,9 +44,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private boolean isShift;
     private boolean closeKeyboard;
 
-    private KeyboardViewManager(Context context, final EditText[] editText, boolean closeKeyboard) {
+    private KeyboardViewManager(Context context, Map<EditText, onSureClickListener> editText, boolean closeKeyboard) {
         this.context = context;
-        this.editText = editText;
+        this.editList = editText;
         this.closeKeyboard = closeKeyboard;
         //创建打气筒
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -62,10 +66,8 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
         //给键盘设置监听
         keyboardView.setOnKeyboardActionListener(this);
-
-        //设置点击EditText点击弹出键盘
-        for (int i = 0; i < editText.length; i++) {
-            editText[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        for (EditText key : editText.keySet()) {
+            key.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
                     if (b) {
@@ -73,18 +75,19 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                         if (frameLayout.getVisibility() == View.GONE) {
                             showSoftKeyboard();
                         }
+
+
                     }
                 }
             });
         }
-
     }
 
     //显示键盘
     private void showSoftKeyboard() {
-        if (closeKeyboard){
+        if (closeKeyboard) {
             frameLayout.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
             frameLayout.startAnimation(show);
             show.setAnimationListener(new Animation.AnimationListener() {
@@ -109,9 +112,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     }
 
     private void hideSoftKeyboard() {
-        if (closeKeyboard){
+        if (closeKeyboard) {
             frameLayout.setVisibility(View.GONE);
-        }else {
+        } else {
             //设置隐藏动画
             Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
             frameLayout.startAnimation(hide);
@@ -120,6 +123,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 public void onAnimationStart(Animation animation) {
 
                 }
+
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     frameLayout.setVisibility(View.GONE);
@@ -188,6 +192,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 currentEditText.setCursorVisible(false);
                 hideSoftKeyboard();
                 focusReplace.requestFocus();
+                if (editList.get(currentEditText)!=null){
+                    editList.get(currentEditText).onSureClick();
+                }
                 break;
 
 
@@ -241,11 +248,12 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     public static final class Builder {
 
-        private EditText[] editText;
-        private boolean closeKeyboard;
 
+        private boolean closeKeyboard;
+        private Map<EditText, onSureClickListener> editList;
 
         private Builder() {
+            editList = new HashMap<>();
         }
 
         //设置第一个输入框键盘模式,不设置默认是英文键盘
@@ -255,14 +263,18 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
 
         //如果页面有Eidttist，解决键盘冲突，这个方法必须写
-        public Builder hideSystemSoftKeyboard(EditText... editText) {
-            //隐藏系统软键盘冲突，需要配合清单文件一起使用: android:windowSoftInputMode="stateHidden|stateUnchanged"
-            EditText[] editText1 = editText;
-            for (int i = 0; i < editText1.length; i++) {
-                SystemSoftKeyUtils.hideSystemSoftKeyboard(editText1[i]);
-                this.editText = editText1;
+        public Builder bindEditText(EditText... editText) {
+            for (int i = 0; i < editText.length; i++) {
+                //隐藏系统软键盘冲突，需要配合清单文件一起使用: android:windowSoftInputMode="stateHidden|stateUnchanged"
+                SystemSoftKeyUtils.hideSystemSoftKeyboard(editText[i]);
+                editList.put(editText[i], null);
             }
 
+            return this;
+        }
+
+        public Builder bindEditTextCallBack(EditText editText, onSureClickListener onSurelistener) {
+            editList.put(editText, onSurelistener);
             return this;
         }
 
@@ -274,7 +286,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
 
         public KeyboardViewManager build(Context context) {
-            return new KeyboardViewManager(context, editText, closeKeyboard);
+            return new KeyboardViewManager(context, editList, closeKeyboard);
         }
 
     }
@@ -332,4 +344,13 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
         isShift = !isShift;
     }
+
+
+    //===================================点击确定回调==============================================
+
+    public interface onSureClickListener {
+        void onSureClick();
+    }
+
+
 }
