@@ -74,6 +74,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     //显示键盘
     private void showSoftKeyboard() {
+        //根据设置的输入类型，动态切换键盘
         int inputType = currentEditText.getInputType();
         if (inputType == 2) {
             keyboardView.setKeyboard(keyboardNumber);
@@ -81,7 +82,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             keyboardView.setKeyboard(keyboardEnglish);
         }
 
-        if (closeKeyboard) {
+        if (closeKeyboard||frameLayout.getVisibility()==View.VISIBLE) {
             frameLayout.setVisibility(View.VISIBLE);
         } else {
             Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
