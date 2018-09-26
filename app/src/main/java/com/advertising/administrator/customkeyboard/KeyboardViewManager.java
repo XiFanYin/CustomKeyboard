@@ -129,7 +129,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             //遍历所有的子View，让其向上移动改移动的高度
             for (int i = 0; i < rootView.getChildCount(); i++) {
                 if (rootView.getChildAt(i) != frameLayout) {
-                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0).setDuration(400).start();
+                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0).setDuration(200).start();
                 }
             }
         }
@@ -288,7 +288,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             for (int i = 0; i < rootView.getChildCount(); i++) {
                 if (rootView.getChildAt(i) != frameLayout) {
                     rootView.getChildAt(i).setTranslationY(moveHeight);
-                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0, moveHeight).setDuration(400).start();
+                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0, moveHeight).setDuration(200).start();
                 }
             }
         }
