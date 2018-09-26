@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity{
         KeyboardViewManager
                 .builder()
                 .bindEditText(edit1,edit2)
-                .closeKeyboardAnimation(true)
                 .bindEditTextCallBack(edit1, new KeyboardViewManager.onSureClickListener() {
                     @Override
                     public void onSureClick() {

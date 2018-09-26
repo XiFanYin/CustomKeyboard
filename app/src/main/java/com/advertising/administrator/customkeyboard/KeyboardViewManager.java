@@ -78,11 +78,13 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         int inputType = currentEditText.getInputType();
         if (inputType == 2) {
             keyboardView.setKeyboard(keyboardNumber);
+            isShift = true;
         } else {
             keyboardView.setKeyboard(keyboardEnglish);
+            isShift = false;
         }
 
-        if (closeKeyboard||frameLayout.getVisibility()==View.VISIBLE) {
+        if (closeKeyboard || frameLayout.getVisibility() == View.VISIBLE) {
             frameLayout.setVisibility(View.VISIBLE);
         } else {
             Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
