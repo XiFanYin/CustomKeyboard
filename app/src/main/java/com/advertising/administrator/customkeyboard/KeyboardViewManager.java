@@ -26,7 +26,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     public static Integer NUMBERXML = R.xml.keyboard_number_abc;
     public static Integer ENGLISHXML = R.xml.keyboard_english;
     //初始化键盘
-    private static Integer current_xml = NUMBERXML;
+    private static Integer current_xml;
     private final EditText[] editText;
     private EditText currentEditText;
     private EditText focusReplace;
@@ -137,7 +137,10 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 Gravity.BOTTOM);
+        FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(0, 0, Gravity.BOTTOM);
         rootView.addView(frameLayout, params);
+        focusReplace = new EditText(context);
+        rootView.addView(focusReplace, params2);
         return this;
     }
 
@@ -174,6 +177,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 //光标不显示
                 currentEditText.setCursorVisible(false);
                 hideSoftKeyboard();
+                focusReplace.requestFocus();
                 break;
 
 
