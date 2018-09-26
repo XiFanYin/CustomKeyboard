@@ -1,6 +1,8 @@
 package com.advertising.administrator.customkeyboard;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Rect;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.Editable;
@@ -43,6 +45,8 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     //标识数字键盘和英文键盘的切换
     private boolean isShift;
     private boolean closeKeyboard;
+    private FrameLayout rootView;
+
 
     private KeyboardViewManager(Context context, Map<EditText, onSureClickListener> editText, boolean closeKeyboard) {
         this.context = context;
@@ -73,7 +77,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
     }
 
-    //显示键盘
+    /**
+     * 显示键盘
+     */
     private void showSoftKeyboard() {
         //根据设置的输入类型，动态切换键盘
         int inputType = currentEditText.getInputType();
@@ -84,7 +90,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             keyboardView.setKeyboard(keyboardEnglish);
             isShift = false;
         }
-
+        //如果遮挡住，计算需要上移的距离，进行上移
+        isCover();
+        //键盘显示和隐藏
         if (closeKeyboard || frameLayout.getVisibility() == View.VISIBLE) {
             frameLayout.setVisibility(View.VISIBLE);
         } else {
@@ -111,7 +119,21 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     }
 
+    /**
+     * 隐藏键盘
+     */
     private void hideSoftKeyboard() {
+
+        Object tag = rootView.getTag();
+        if (tag != null) {
+            //遍历所有的子View，让其向上移动改移动的高度
+            for (int i = 0; i < rootView.getChildCount(); i++) {
+                if (rootView.getChildAt(i) != frameLayout) {
+                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0).setDuration(400).start();
+                }
+            }
+        }
+
         if (closeKeyboard) {
             frameLayout.setVisibility(View.GONE);
         } else {
@@ -147,6 +169,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
      * @return
      */
     public KeyboardViewManager addKeyboardView(FrameLayout rootView) {
+        this.rootView = rootView;
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -184,9 +207,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 keyboardView.setKeyboard(keyboardEnglish);
                 break;
             case -2://字母和数字切换按钮
-                if (currentEditText.getInputType() == 2&& keyboardView.getKeyboard()==keyboardNumber) {
+                if (currentEditText.getInputType() == 2 && keyboardView.getKeyboard() == keyboardNumber) {
                     Toast.makeText(context, "只能输入数字", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     shiftKeyboard();
                 }
                 break;
@@ -240,6 +263,35 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     @Override
     public void swipeUp() {
+
+    }
+
+    /**
+     * 如果输入框呗遮挡就向下移动
+     *
+     * @return
+     */
+    public void isCover() {
+        //获取传递过来的跟布局的宽高
+        Rect rect = new Rect();
+        frameLayout.getWindowVisibleDisplayFrame(rect);
+        //计算当前获取焦点的输入框在屏幕中的位置
+        int[] vLocation = new int[2];
+        currentEditText.getLocationOnScreen(vLocation);
+        int keyboardTop = vLocation[1] + currentEditText.getHeight() / 2 + currentEditText.getPaddingBottom() + currentEditText.getPaddingTop();
+        //输入框或基线View的到屏幕的距离 + 键盘高度 如果 超出了屏幕的承载范围, 就需要移动.
+        int moveHeight = rect.bottom - keyboardTop - keyboardView.getHeight();
+        moveHeight = moveHeight > 0 ? 0 : moveHeight;
+        if (moveHeight != 0) {
+            rootView.setTag("move");
+            //遍历所有的子View，让其向上移动改移动的高度
+            for (int i = 0; i < rootView.getChildCount(); i++) {
+                if (rootView.getChildAt(i) != frameLayout) {
+                    rootView.getChildAt(i).setTranslationY(moveHeight);
+                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0, moveHeight).setDuration(400).start();
+                }
+            }
+        }
 
     }
 
