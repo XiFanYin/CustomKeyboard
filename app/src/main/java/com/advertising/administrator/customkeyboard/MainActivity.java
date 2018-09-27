@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText edit1;
     private EditText edit2;
     private EditText edit3;
+    private EditText edit4;
     private KeyboardViewManager keyboardViewManager;
 
     @Override
@@ -28,10 +29,12 @@ public class MainActivity extends AppCompatActivity {
         edit1 = findViewById(R.id.edit1);
         edit2 = findViewById(R.id.edit2);
         edit3 = findViewById(R.id.edit3);
+        edit4 = findViewById(R.id.edit4);
 
         keyboardViewManager = KeyboardViewManager
                 .builder()
                 .bindEditText(edit1, edit2, edit3)
+                .showSystemKeyboard(edit4)
                 .bindEditTextCallBack(edit1, new KeyboardViewManager.onSureClickListener() {
                     @Override
                     public void onSureClick() {

@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     //英文键盘和数字键盘标记
     public static Integer NUMBERXML = R.xml.keyboard_number_abc;
     public static Integer ENGLISHXML = R.xml.keyboard_english;
+    private final List<EditText> showSystem;
 
     private Map<EditText, onSureClickListener> editList;
     private EditText currentEditText;
@@ -48,10 +50,10 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private FrameLayout rootView;
     boolean hideing = true;
 
-    private KeyboardViewManager(Context context, Map<EditText, onSureClickListener> editText) {
+    private KeyboardViewManager(final Context context, Map<EditText, onSureClickListener> editText, final List<EditText> showSystem) {
         this.context = context;
         this.editList = editText;
-
+        this.showSystem = showSystem;
         //创建打气筒
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         //把键盘布局解析成对象
@@ -69,9 +71,16 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 @Override
                 public void onFocusChange(View view, boolean b) {
                     if (b) {
-                        currentEditText = (EditText) view;
-                        currentEditText.setCursorVisible(true);
-                        showSoftKeyboard();
+                        if (showSystem.contains(view)) {
+                            hideSoftKeyboard();
+                            currentEditText = (EditText) view;
+                        } else {
+                            currentEditText = (EditText) view;
+                            currentEditText.setCursorVisible(true);
+                            SystemSoftKeyUtils.hideSoftInput(context, view);
+                            showSoftKeyboard();
+                        }
+
                     }
                 }
             });
@@ -230,10 +239,6 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 }
                 break;
 
-
-            case 45://切换到中文
-                SystemSoftKeyUtils.showSoftInput(context);
-                break;
             default://普通的按键就直接去把字符串设置到EditText上即可
                 //在光标处插入字符
                 editable.insert(start, Character.toString((char) primaryCode));
@@ -308,9 +313,11 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
 
         private Map<EditText, onSureClickListener> editList;
+        private List<EditText> showSystem;
 
         private Builder() {
             editList = new HashMap<>();
+            showSystem = new ArrayList<>();
         }
 
 
@@ -330,10 +337,18 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             return this;
         }
 
+        public Builder showSystemKeyboard(EditText... editTexts) {
+            showSystem = Arrays.asList(editTexts);
+            for (int i = 0; i < editTexts.length; i++) {
+                editList.put(editTexts[i], null);
+            }
+            return this;
+        }
 
         public KeyboardViewManager build(Context context) {
-            return new KeyboardViewManager(context, editList);
+            return new KeyboardViewManager(context, editList, showSystem);
         }
+
 
     }
 

@@ -125,13 +125,9 @@
             android:isSticky="true"
             android:keyEdgeFlags="left"
             android:keyLabel="123"
-            android:keyWidth="10%p" />
+            android:keyWidth="20%p" />
 
-        <Key
-            android:codes="45"
-            android:horizontalGap="2%p"
-            android:keyLabel="中"
-            android:keyWidth="10%p" />
+
         <Key
             android:codes="32"
             android:horizontalGap="5%p"
