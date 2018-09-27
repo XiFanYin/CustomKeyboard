@@ -229,6 +229,11 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                     }
                 }
                 break;
+
+
+            case 45://切换到中文
+                SystemSoftKeyUtils.showSoftInput(context);
+                break;
             default://普通的按键就直接去把字符串设置到EditText上即可
                 //在光标处插入字符
                 editable.insert(start, Character.toString((char) primaryCode));

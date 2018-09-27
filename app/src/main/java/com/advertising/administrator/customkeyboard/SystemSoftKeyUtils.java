@@ -1,7 +1,10 @@
 package com.advertising.administrator.customkeyboard;
 
+import android.content.Context;
 import android.os.Build;
 import android.text.InputType;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import java.lang.reflect.Method;
@@ -33,4 +36,31 @@ public class SystemSoftKeyUtils {
             editText.setInputType(InputType.TYPE_NULL);
         }
     }
+
+
+    /**
+     * 显示软键盘
+     */
+    public static void showSoftInput(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    /**
+     * 显示软键盘
+     */
+    public static void showSoftInput(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view, 0);
+    }
+
+    /**
+     * 隐藏软键盘
+     */
+    public static void hideSoftInput(Context context, View view) {
+        InputMethodManager immHide = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        immHide.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+
 }
