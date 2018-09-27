@@ -46,7 +46,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private boolean isShift;
     private boolean closeKeyboard;
     private FrameLayout rootView;
-
+    boolean hideing = true;
 
     private KeyboardViewManager(Context context, Map<EditText, onSureClickListener> editText, boolean closeKeyboard) {
         this.context = context;
@@ -70,6 +70,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                 public void onFocusChange(View view, boolean b) {
                     if (b) {
                         currentEditText = (EditText) view;
+                        currentEditText.setCursorVisible(true);
                         showSoftKeyboard();
                     }
                 }
@@ -122,40 +123,45 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     /**
      * 隐藏键盘
      */
-    private void hideSoftKeyboard() {
+    public void hideSoftKeyboard() {
 
-        Object tag = rootView.getTag();
-        if (tag != null) {
-            //遍历所有的子View，让其向上移动改移动的高度
-            for (int i = 0; i < rootView.getChildCount(); i++) {
-                if (rootView.getChildAt(i) != frameLayout) {
-                    ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0).setDuration(200).start();
+        if (frameLayout.getVisibility()==View.VISIBLE&&hideing){
+            hideing = false;
+            Object tag = rootView.getTag();
+            if (tag != null) {
+                //遍历所有的子View，让其向上移动改移动的高度
+                for (int i = 0; i < rootView.getChildCount(); i++) {
+                    if (rootView.getChildAt(i) != frameLayout) {
+                        ObjectAnimator.ofFloat(rootView.getChildAt(i), "translationY", 0).setDuration(200).start();
+                    }
                 }
             }
-        }
 
-        if (closeKeyboard) {
-            frameLayout.setVisibility(View.GONE);
-        } else {
-            //设置隐藏动画
-            Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
-            frameLayout.startAnimation(hide);
-            hide.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
+            if (closeKeyboard) {
+                frameLayout.setVisibility(View.GONE);
+            } else {
+                //设置隐藏动画
+                Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
+                frameLayout.startAnimation(hide);
+                hide.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
 
-                }
+                    }
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    frameLayout.setVisibility(View.GONE);
-                }
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        frameLayout.setVisibility(View.GONE);
+                        hideing = true;
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animation animation) {
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
 
-                }
-            });
+                    }
+                });
+
+            }
 
         }
 
