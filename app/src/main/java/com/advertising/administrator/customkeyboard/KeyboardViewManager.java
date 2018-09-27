@@ -44,14 +44,14 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private final KeyboardView keyboardView;
     //标识数字键盘和英文键盘的切换
     private boolean isShift;
-    private boolean closeKeyboard;
+
     private FrameLayout rootView;
     boolean hideing = true;
 
-    private KeyboardViewManager(Context context, Map<EditText, onSureClickListener> editText, boolean closeKeyboard) {
+    private KeyboardViewManager(Context context, Map<EditText, onSureClickListener> editText) {
         this.context = context;
         this.editList = editText;
-        this.closeKeyboard = closeKeyboard;
+
         //创建打气筒
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         //把键盘布局解析成对象
@@ -94,9 +94,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         //如果遮挡住，计算需要上移的距离，进行上移
         isCover();
         //键盘显示和隐藏
-        if (closeKeyboard || frameLayout.getVisibility() == View.VISIBLE) {
-            frameLayout.setVisibility(View.VISIBLE);
-        } else {
+        if (frameLayout.getVisibility() == View.GONE) {
             Animation show = AnimationUtils.loadAnimation(context, R.anim.down_to_up);
             frameLayout.startAnimation(show);
             show.setAnimationListener(new Animation.AnimationListener() {
@@ -125,7 +123,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
      */
     public void hideSoftKeyboard() {
 
-        if (frameLayout.getVisibility()==View.VISIBLE&&hideing){
+        if (frameLayout.getVisibility() == View.VISIBLE && hideing) {
             hideing = false;
             Object tag = rootView.getTag();
             if (tag != null) {
@@ -136,35 +134,28 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                     }
                 }
             }
+            //设置隐藏动画
+            Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
+            frameLayout.startAnimation(hide);
+            hide.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
-            if (closeKeyboard) {
-                frameLayout.setVisibility(View.GONE);
-            } else {
-                //设置隐藏动画
-                Animation hide = AnimationUtils.loadAnimation(context, R.anim.up_to_hide);
-                frameLayout.startAnimation(hide);
-                hide.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
+                }
 
-                    }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    frameLayout.setVisibility(View.GONE);
+                    hideing = true;
+                }
 
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        frameLayout.setVisibility(View.GONE);
-                        hideing = true;
-                    }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-            }
+                }
+            });
 
         }
-
     }
 
 
@@ -311,7 +302,6 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     public static final class Builder {
 
 
-        private boolean closeKeyboard;
         private Map<EditText, onSureClickListener> editList;
 
         private Builder() {
@@ -336,14 +326,8 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         }
 
 
-        public Builder closeKeyboardAnimation(boolean closeKeyboard) {
-            this.closeKeyboard = closeKeyboard;
-            return this;
-        }
-
-
         public KeyboardViewManager build(Context context) {
-            return new KeyboardViewManager(context, editList, closeKeyboard);
+            return new KeyboardViewManager(context, editList);
         }
 
     }

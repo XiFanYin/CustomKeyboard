@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         keyboardViewManager.hideSoftKeyboard();
