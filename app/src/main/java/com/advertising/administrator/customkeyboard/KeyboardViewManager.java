@@ -33,12 +33,12 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     //英文键盘和数字键盘标记
     public static Integer NUMBERXML = R.xml.keyboard_number_abc;
     public static Integer ENGLISHXML = R.xml.keyboard_english;
-    private final List<EditText> showSystem;
+    private static List<EditText> showSystem;
 
-    private Map<EditText, onSureClickListener> editList;
+    private static Map<EditText, onSureClickListener> editList;
     private EditText currentEditText;
     private EditText focusReplace;
-    private final Context context;
+    private static Context context;
     private final Keyboard keyboardEnglish;
     private final Keyboard keyboardNumber;
     //标识英文键盘大小写切换
@@ -50,10 +50,8 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
     private FrameLayout rootView;
     boolean hideing = true;
 
-    private KeyboardViewManager(final Context context, Map<EditText, onSureClickListener> editText, final List<EditText> showSystem) {
-        this.context = context;
-        this.editList = editText;
-        this.showSystem = showSystem;
+    private KeyboardViewManager() {
+
         //创建打气筒
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         //把键盘布局解析成对象
@@ -66,7 +64,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
         keyboardView.setKeyboard(keyboardNumber);
         //给键盘设置监听
         keyboardView.setOnKeyboardActionListener(this);
-        for (EditText key : editText.keySet()) {
+        for (EditText key : editList.keySet()) {
             key.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
@@ -311,10 +309,6 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
     public static final class Builder {
 
-
-        private Map<EditText, onSureClickListener> editList;
-        private List<EditText> showSystem;
-
         private Builder() {
             editList = new HashMap<>();
             showSystem = new ArrayList<>();
@@ -345,8 +339,9 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             return this;
         }
 
-        public KeyboardViewManager build(Context context) {
-            return new KeyboardViewManager(context, editList, showSystem);
+        public KeyboardViewManager build(Context context1) {
+            context = context1;
+            return new KeyboardViewManager();
         }
 
 
