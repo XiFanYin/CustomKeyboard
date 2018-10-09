@@ -147,7 +147,8 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
             hide.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
+                    currentEditText.setCursorVisible(false);
+                    focusReplace.requestFocus();
                 }
 
                 @Override
@@ -220,9 +221,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
             case -4://完成按钮
                 //光标不显示
-                currentEditText.setCursorVisible(false);
                 hideSoftKeyboard();
-                focusReplace.requestFocus();
                 if (editList.get(currentEditText) != null) {
                     editList.get(currentEditText).onSureClick();
                 }
