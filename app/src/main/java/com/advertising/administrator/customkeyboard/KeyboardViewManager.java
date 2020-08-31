@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -82,15 +84,34 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
                     }
                 }
             });
+
+            key.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (showSystem.contains(v)) {
+                        hideSoftKeyboard();
+                        currentEditText = (EditText) v;
+                    } else {
+                        currentEditText = (EditText) v;
+                        currentEditText.setCursorVisible(true);
+                        SystemSoftKeyUtils.hideSoftInput(context, v);
+                        showSoftKeyboard();
+                    }
+                }
+            });
         }
     }
 
     /**
      * 显示键盘
      */
+    private InputConnection inputConnection;
+
     private void showSoftKeyboard() {
         //根据设置的输入类型，动态切换键盘
         int inputType = currentEditText.getInputType();
+        inputConnection = currentEditText.onCreateInputConnection(new EditorInfo());
+
         if (inputType == 2) {
             keyboardView.setKeyboard(keyboardNumber);
             isShift = true;
@@ -130,6 +151,7 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
      */
     public void hideSoftKeyboard() {
 
+        inputConnection = null;
         if (frameLayout.getVisibility() == View.VISIBLE && hideing) {
             hideing = false;
             Object tag = rootView.getTag();
@@ -229,16 +251,31 @@ public class KeyboardViewManager implements KeyboardView.OnKeyboardActionListene
 
 
             case -5://删除光标前字符
-                if (!TextUtils.isEmpty(editable)) {
-                    if (start > 0) {
-                        editable.delete(start - 1, start);
+                if (inputConnection != null) {
+                    CharSequence selectedText = inputConnection.getSelectedText(0);
+                    if (TextUtils.isEmpty(selectedText)) {
+                        // no selection, so delete previous character
+                        inputConnection.deleteSurroundingText(1, 0);
+                    } else {
+                        // delete the selection
+                        inputConnection.commitText("", 1);
+                    }
+                } else {
+                    if (!TextUtils.isEmpty(editable)) {
+                        if (start > 0) {
+                            editable.delete(start - 1, start);
+                        }
                     }
                 }
                 break;
 
             default://普通的按键就直接去把字符串设置到EditText上即可
                 //在光标处插入字符
-                editable.insert(start, Character.toString((char) primaryCode));
+                if (inputConnection != null) {
+                    inputConnection.commitText(Character.toString((char) primaryCode), 1);
+                } else {
+                    editable.insert(start, Character.toString((char) primaryCode));
+                }
                 break;
         }
 
